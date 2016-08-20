@@ -1,8 +1,9 @@
-package = "pgmoon"
-version = "dev-1"
+package = "pgmoon-mashape"
+version = "1.7.0"
 
 source = {
-  url = "git://github.com/leafo/pgmoon.git"
+  url = "git://github.com/Mashape/pgmoon.git",
+  tag = "1.7.0"
 }
 
 description = {

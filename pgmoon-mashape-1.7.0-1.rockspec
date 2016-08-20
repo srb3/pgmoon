@@ -1,5 +1,5 @@
 package = "pgmoon-mashape"
-version = "1.7.0"
+version = "1.7.0-1"
 
 source = {
   url = "git://github.com/Mashape/pgmoon.git",

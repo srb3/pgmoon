@@ -1,98 +1,198 @@
-local luasocket
+local type = type
+
+----------------------------
+-- LuaSocket proxy metatable
+----------------------------
+
+local proxy_mt
+
 do
-  local __flatten
-  __flatten = function(t, buffer)
-    local _exp_0 = type(t)
-    if "string" == _exp_0 then
-      buffer[#buffer + 1] = t
-    elseif "table" == _exp_0 then
-      for _index_0 = 1, #t do
-        local thing = t[_index_0]
-        __flatten(thing, buffer)
+  local tostring = tostring
+  local concat = table.concat
+  local pairs = pairs
+
+  local function flatten(v, buf)
+    if type(v) == 'string' then
+      buf[#buf+1] = v
+    elseif type(v) == 'table' then
+      for i = 1, #v do
+        flatten(v[i], buf)
       end
     end
   end
-  local _flatten
-  _flatten = function(t)
-    local buffer = { }
-    __flatten(t, buffer)
-    return table.concat(buffer)
-  end
-  local proxy_mt = {
-    __index = function(self, key)
-      local sock = self.sock
-      local original = sock[key]
-      if type(original) == "function" then
-        local fn
-        fn = function(_, ...)
-          return original(sock, ...)
-        end
-        self[key] = fn
-        return fn
-      else
-        return original
+
+  proxy_mt = {
+    send = function(self, data)
+      if type(data) == 'table' then
+        local buffer = {}
+        flatten(data, buffer)
+        data = concat(buffer)
       end
-    end
-  }
-  local overrides = {
-    send = true,
-    getreusedtimes = true,
-    sslhandshake = true
-  }
-  luasocket = {
-    tcp = function(...)
-      local socket = require("socket")
-      local sock = socket.tcp(...)
-      local proxy = setmetatable({
-        sock = sock,
-        send = function(self, ...)
-          return self.sock:send(_flatten(...))
-        end,
-        getreusedtimes = function(self)
-          return 0
-        end,
-        sslhandshake = function(self, _, _, verify, _, opts)
-          if opts == nil then
-            opts = { }
-          end
-          local ssl = require("ssl")
-          local params = {
-            mode = "client",
-            protocol = "tlsv1",
-            key = opts.key,
-            certificate = opts.cert,
-            cafile = opts.cafile,
-            verify = verify and "peer" or "none",
-            options = "all"
-          }
-          local sec_sock, err = ssl.wrap(self.sock, params)
-          if not (sec_sock) then
-            return false, err
-          end
-          local success
-          success, err = sec_sock:dohandshake()
-          if not (success) then
-            return false, err
-          end
-          for k, v in pairs(self) do
-            if not (type(v) ~= "function" or overrides[k]) then
-              self[k] = nil
-            end
-          end
-          self.sock = sec_sock
-          return true
+
+      return self.sock:send(data)
+    end,
+    getreusedtimes = function() return 0 end,
+    settimeout = function(self, t)
+      if t then
+        t = t/1000
+      end
+      self.sock:settimeout(t)
+    end,
+    setkeepalive = function(self)
+      self.sock:close()
+      return true
+    end,
+    sslhandshake = function(self, reused_session, _, verify, opts)
+      opts = opts or {}
+      local return_bool = reused_session == false
+
+      local ssl = require 'ssl'
+      local params = {
+        mode = 'client',
+        protocol = 'tlsv1',
+        key = opts.key,
+        certificate = opts.cert,
+        cafile = opts.cafile,
+        verify = verify and 'peer' or 'none',
+        options = 'all'
+      }
+
+      local sock, err = ssl.wrap(self.sock, params)
+      if not sock then
+        return return_bool and false or nil, err
+      end
+
+      local ok, err = sock:dohandshake()
+      if not ok then
+        return return_bool and false or nil, err
+      end
+
+      -- purge memoized closures
+      for k, v in pairs(self) do
+        if type(v) == 'function' then
+          self[k] = nil
         end
-      }, proxy_mt)
-      return proxy
+      end
+
+      self.sock = sock
+
+      return return_bool and true or self
     end
   }
+
+  proxy_mt.__tostring = function(self)
+    return tostring(self.sock)
+  end
+
+  proxy_mt.__index = function(self, key)
+    local override = proxy_mt[key]
+    if override then
+      return override
+    end
+
+    local orig = self.sock[key]
+    if type(orig) == 'function' then
+      local f = function(_, ...)
+        return orig(self.sock, ...)
+      end
+      self[key] = f
+      return f
+    elseif orig then
+      return orig
+    end
+  end
 end
-return {
-  new = function()
-    if ngx and ngx.get_phase() ~= "init" then
-      return ngx.socket.tcp()
-    else
-      return luasocket.tcp()
+
+---------
+-- Module
+---------
+
+local _M = {
+  luasocket_mt = proxy_mt,
+  _VERSION = '0.0.7'
+}
+
+-----------------------
+-- ngx_lua/plain compat
+-----------------------
+
+local COSOCKET_PHASES = {
+  rewrite = true,
+  access = true,
+  content = true,
+  timer = true,
+  ssl_cert = true,
+  ssl_session_fetch = true
+}
+
+local forced_luasocket_phases = {}
+local forbidden_luasocket_phases = {}
+
+do
+  local setmetatable = setmetatable
+
+  if ngx then
+    local log, WARN, INFO = ngx.log, ngx.WARN, ngx.INFO
+    local get_phase = ngx.get_phase
+    local ngx_socket = ngx.socket
+
+    function _M.tcp(...)
+      local phase = get_phase()
+      if not forced_luasocket_phases[phase]
+         and COSOCKET_PHASES[phase]
+         or forbidden_luasocket_phases[phase] then
+        return ngx_socket.tcp(...)
+      end
+
+      -- LuaSocket
+      if phase ~= 'init' then
+        if forced_luasocket_phases[phase] then
+          log(INFO, 'support for cosocket in this context, but LuaSocket forced')
+        else
+          log(WARN, 'no support for cosockets in this context, falling back to LuaSocket')
+        end
+      end
+
+      local socket = require 'socket'
+
+      return setmetatable({
+        sock = socket.tcp(...)
+      }, proxy_mt)
+    end
+  else
+    local socket = require 'socket'
+
+    function _M.tcp(...)
+      return setmetatable({
+        sock = socket.tcp(...)
+      }, proxy_mt)
     end
   end
-}
+end
+
+---------------------------------------
+-- Disabling/forcing LuaSocket fallback
+---------------------------------------
+
+do
+  local function check_phase(phase)
+    if type(phase) ~= 'string' then
+      local info = debug.getinfo(2)
+      local err = string.format("bad argument #1 to '%s' (%s expected, got %s)",
+                                info.name, 'string', type(phase))
+      error(err, 3)
+    end
+  end
+
+  function _M.force_luasocket(phase, force)
+    check_phase(phase)
+    forced_luasocket_phases[phase] = force
+  end
+
+  function _M.disable_luasocket(phase, disable)
+    check_phase(phase)
+    forbidden_luasocket_phases[phase] = disable
+  end
+end
+
+return _M

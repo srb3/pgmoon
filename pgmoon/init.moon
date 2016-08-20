@@ -151,7 +151,7 @@ class Postgres
       }
 
   connect: =>
-    @sock = socket.new!
+    @sock = socket.tcp!
     ok, err = @sock\connect @host, @port
     return nil, err unless ok
 

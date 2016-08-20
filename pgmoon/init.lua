@@ -161,7 +161,7 @@ do
       end
     },
     connect = function(self)
-      self.sock = socket.new()
+      self.sock = socket.tcp()
       local ok, err = self.sock:connect(self.host, self.port)
       if not (ok) then
         return nil, err

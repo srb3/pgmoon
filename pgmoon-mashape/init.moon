@@ -1,8 +1,8 @@
-socket = require "pgmoon.socket"
+socket = require "pgmoon-mashape.socket"
 import insert from table
 import rshift, lshift, band from require "bit"
 
-VERSION = "1.6.0"
+VERSION = "2.0.0"
 
 _len = (thing, t=type(thing)) ->
   switch t
@@ -110,27 +110,27 @@ class Postgres
   -- custom types supplementing PG_TYPES
   type_deserializers: {
     json: (val, name) =>
-      import decode_json from require "pgmoon.json"
+      import decode_json from require "pgmoon-mashape.json"
       decode_json val
 
     bytea: (val, name) =>
       @decode_bytea val
 
     array_boolean: (val, name) =>
-      import decode_array from require "pgmoon.arrays"
+      import decode_array from require "pgmoon-mashape.arrays"
       decode_array val, tobool
 
     array_number: (val, name) =>
-      import decode_array from require "pgmoon.arrays"
+      import decode_array from require "pgmoon-mashape.arrays"
       decode_array val, tonumber
 
     array_string: (val, name) =>
-      import decode_array from require "pgmoon.arrays"
+      import decode_array from require "pgmoon-mashape.arrays"
       decode_array val
 
     array_json: (val, name) =>
-      import decode_array from require "pgmoon.arrays"
-      import decode_json from require "pgmoon.json"
+      import decode_array from require "pgmoon-mashape.arrays"
+      import decode_json from require "pgmoon-mashape.json"
       decode_array val, decode_json
   }
 
@@ -215,7 +215,7 @@ class Postgres
     @check_auth!
 
   md5_auth: (msg) =>
-    import md5 from require "pgmoon.crypto"
+    import md5 from require "pgmoon-mashape.crypto"
     salt = msg\sub 5, 8
     assert @password, "missing password, required for connect"
 

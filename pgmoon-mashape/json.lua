@@ -5,7 +5,7 @@ encode_json = function(tbl, escape_literal)
   local json = require("cjson")
   if not (escape_literal) then
     local Postgres
-    Postgres = require("pgmoon").Postgres
+    Postgres = require("pgmoon-mashape").Postgres
     default_escape_literal = function(v)
       return Postgres.escape_literal(nil, v)
     end

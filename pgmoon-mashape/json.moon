@@ -5,7 +5,7 @@ encode_json = (tbl, escape_literal) ->
   json = require "cjson"
 
   unless escape_literal
-    import Postgres from require "pgmoon"
+    import Postgres from require "pgmoon-mashape"
     default_escape_literal = (v) ->
       Postgres.escape_literal nil, v
 

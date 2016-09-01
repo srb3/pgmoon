@@ -1,11 +1,11 @@
 
-import Postgres from require "pgmoon"
+import Postgres from require "pgmoon-mashape"
 
 HOST = "127.0.0.1"
 USER = "postgres"
 DB = "pgmoon_test"
 
-describe "pgmoon with server", ->
+describe "pgmoon-mashape with server", ->
   local pg
 
   setup ->
@@ -290,7 +290,7 @@ describe "pgmoon with server", ->
     ]]
 
   describe "json", ->
-    import encode_json, decode_json from require "pgmoon.json"
+    import encode_json, decode_json from require "pgmoon-mashape.json"
 
     it "encodes json type", ->
       t = { hello: "world" }
@@ -331,10 +331,10 @@ describe "pgmoon with server", ->
       ]]
 
   describe "arrays", ->
-    import decode_array, encode_array from require "pgmoon.arrays"
+    import decode_array, encode_array from require "pgmoon-mashape.arrays"
 
     it "converts table to array", ->
-      import PostgresArray from require "pgmoon.arrays"
+      import PostgresArray from require "pgmoon-mashape.arrays"
 
       array = PostgresArray {1,2,3}
       assert.same {1,2,3}, array
@@ -347,7 +347,7 @@ describe "pgmoon with server", ->
 
     it "decodes empty array value", ->
       assert.same {}, decode_array "{}"
-      import PostgresArray from require "pgmoon.arrays"
+      import PostgresArray from require "pgmoon-mashape.arrays"
       assert PostgresArray.__base == getmetatable decode_array "{}"
 
     it "decodes numeric array", ->
@@ -532,7 +532,7 @@ describe "pgmoon with server", ->
     pg\disconnect!
     os.execute "dropdb -U postgres '#{DB}'"
 
-describe "pgmoon without server", ->
+describe "pgmoon-mashape without server", ->
   escape_ident = {
     { "dad", '"dad"' }
     { "select", '"select"' }

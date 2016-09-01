@@ -1,4 +1,4 @@
-local socket = require("pgmoon.socket")
+local socket = require("pgmoon-mashape.socket")
 local insert
 insert = table.insert
 local rshift, lshift, band
@@ -6,7 +6,7 @@ do
   local _obj_0 = require("bit")
   rshift, lshift, band = _obj_0.rshift, _obj_0.lshift, _obj_0.band
 end
-local VERSION = "1.6.0"
+local VERSION = "2.0.0"
 local _len
 _len = function(thing, t)
   if t == nil then
@@ -131,7 +131,7 @@ do
     type_deserializers = {
       json = function(self, val, name)
         local decode_json
-        decode_json = require("pgmoon.json").decode_json
+        decode_json = require("pgmoon-mashape.json").decode_json
         return decode_json(val)
       end,
       bytea = function(self, val, name)
@@ -139,24 +139,24 @@ do
       end,
       array_boolean = function(self, val, name)
         local decode_array
-        decode_array = require("pgmoon.arrays").decode_array
+        decode_array = require("pgmoon-mashape.arrays").decode_array
         return decode_array(val, tobool)
       end,
       array_number = function(self, val, name)
         local decode_array
-        decode_array = require("pgmoon.arrays").decode_array
+        decode_array = require("pgmoon-mashape.arrays").decode_array
         return decode_array(val, tonumber)
       end,
       array_string = function(self, val, name)
         local decode_array
-        decode_array = require("pgmoon.arrays").decode_array
+        decode_array = require("pgmoon-mashape.arrays").decode_array
         return decode_array(val)
       end,
       array_json = function(self, val, name)
         local decode_array
-        decode_array = require("pgmoon.arrays").decode_array
+        decode_array = require("pgmoon-mashape.arrays").decode_array
         local decode_json
-        decode_json = require("pgmoon.json").decode_json
+        decode_json = require("pgmoon-mashape.json").decode_json
         return decode_array(val, decode_json)
       end
     },
@@ -234,7 +234,7 @@ do
     end,
     md5_auth = function(self, msg)
       local md5
-      md5 = require("pgmoon.crypto").md5
+      md5 = require("pgmoon-mashape.crypto").md5
       local salt = msg:sub(5, 8)
       assert(self.password, "missing password, required for connect")
       self:send_message(MSG_TYPE.password, {

@@ -161,7 +161,7 @@ do
       end
     },
     connect = function(self)
-      self.sock = socket.tcp()
+      self.sock, self.sock_type = socket.tcp()
       local ok, err = self.sock:connect(self.host, self.port)
       if not (ok) then
         return nil, err
@@ -544,7 +544,11 @@ do
         return nil, err
       end
       if t == MSG_TYPE.status then
-        return self.sock:sslhandshake(false, nil, self.ssl_verify, nil, self.luasec_opts)
+        if self.sock_type == "luasocket" then
+          return self.sock:sslhandshake(false, nil, self.ssl_verify, nil, self.luasec_opts)
+        else
+          return self.sock:sslhandshake(false, nil, self.ssl_verify)
+        end
       elseif t == MSG_TYPE.error or self.ssl_required then
         self:disconnect()
         return nil, "the server does not support SSL connections"

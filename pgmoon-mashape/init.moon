@@ -151,7 +151,7 @@ class Postgres
       }
 
   connect: =>
-    @sock = socket.tcp!
+    @sock, @sock_type = socket.tcp!
     ok, err = @sock\connect @host, @port
     return nil, err unless ok
 
@@ -493,7 +493,10 @@ class Postgres
     return nil, err unless t
 
     if t == MSG_TYPE.status
-      @sock\sslhandshake false, nil, @ssl_verify, nil, @luasec_opts
+      if @sock_type == "luasocket"
+        @sock\sslhandshake false, nil, @ssl_verify, nil, @luasec_opts
+      else
+        @sock\sslhandshake false, nil, @ssl_verify
     elseif t == MSG_TYPE.error or @ssl_required
       @disconnect!
       nil, "the server does not support SSL connections"

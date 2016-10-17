@@ -42,7 +42,7 @@ do
       self.sock:close()
       return true
     end,
-    sslhandshake = function(self, reused_session, _, verify, opts)
+    sslhandshake = function(self, reused_session, _, verify, _, opts)
       opts = opts or {}
       local return_bool = reused_session == false
 
@@ -109,7 +109,7 @@ end
 
 local _M = {
   luasocket_mt = proxy_mt,
-  _VERSION = '0.0.7'
+  _VERSION = '0.0.8'
 }
 
 -----------------------
@@ -141,7 +141,7 @@ do
       if not forced_luasocket_phases[phase]
          and COSOCKET_PHASES[phase]
          or forbidden_luasocket_phases[phase] then
-        return ngx_socket.tcp(...)
+        return ngx_socket.tcp(...), 'cosocket'
       end
 
       -- LuaSocket
@@ -157,7 +157,7 @@ do
 
       return setmetatable({
         sock = socket.tcp(...)
-      }, proxy_mt)
+      }, proxy_mt), 'luasocket'
     end
   else
     local socket = require 'socket'
@@ -165,7 +165,7 @@ do
     function _M.tcp(...)
       return setmetatable({
         sock = socket.tcp(...)
-      }, proxy_mt)
+      }, proxy_mt), 'luasocket'
     end
   end
 end

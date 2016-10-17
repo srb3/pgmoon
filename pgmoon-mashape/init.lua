@@ -6,7 +6,7 @@ do
   local _obj_0 = require("bit")
   rshift, lshift, band = _obj_0.rshift, _obj_0.lshift, _obj_0.band
 end
-local VERSION = "2.0.0"
+local VERSION = "2.0.1"
 local _len
 _len = function(thing, t)
   if t == nil then

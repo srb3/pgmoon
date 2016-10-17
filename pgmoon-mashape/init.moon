@@ -2,7 +2,7 @@ socket = require "pgmoon-mashape.socket"
 import insert from table
 import rshift, lshift, band from require "bit"
 
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 
 _len = (thing, t=type(thing)) ->
   switch t

@@ -309,6 +309,7 @@ Homepage: <http://leafo.net>
 
 # Changelog
 
+* 2.0.1 — 2016-10-17 — [Mashape fork] Prevent ngx_lua error on SSL connections
 * 2.0.0 — 2016-09-01 — [Mashape fork] Renamed to `pgmoon-mashape`
 * 1.7.0 — 2016-08-19 — [Mashape fork] Temporarily use lua-resty-socket to force LuaSocket fallback in resty-cli
 * 1.6.0 — 2016-07-21 — Add support for json and jsonb array decoding

@@ -1,9 +1,9 @@
 package = "pgmoon-mashape"
-version = "2.0.0-1"
+version = "2.0.1-1"
 
 source = {
   url = "git://github.com/Mashape/pgmoon.git",
-  tag = "2.0.0"
+  tag = "2.0.1"
 }
 
 description = {

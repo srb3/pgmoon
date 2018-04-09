@@ -1,6 +1,6 @@
 
 luasocket = do
-  import flatten from require "pgmoon.util"
+  import flatten from require "kpgmoon.util"
 
   proxy_mt = {
     __index: (key) =>
@@ -80,7 +80,7 @@ luasocket = do
       when "luasocket"
         luasocket.tcp!
       when "cqueues"
-        require("pgmoon.cqueues").CqueuesSocket!
+        require("kpgmoon.cqueues").CqueuesSocket!
       else
         error "unknown socket type: #{socket_type}"
 

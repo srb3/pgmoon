@@ -9,7 +9,7 @@ encode_hstore = do
     escape_literal or= default_escape_literal
 
     unless escape_literal
-      import Postgres from require "pgmoon"
+      import Postgres from require "kpgmoon"
       default_escape_literal = (v) ->
         Postgres.escape_literal nil, v
 

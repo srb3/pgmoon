@@ -1,11 +1,11 @@
-import Postgres from require "pgmoon"
+import Postgres from require "kpgmoon"
 
 HOST = "127.0.0.1"
 PORT = "9999"
 USER = "postgres"
 DB = "pgmoon_test"
 
-describe "pgmoon with server", ->
+describe "kpgmoon with server", ->
   local pg
 
   setup ->

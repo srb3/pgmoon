@@ -1,8 +1,9 @@
-package = "pgmoon"
-version = "dev-1"
+package = "kpgmoon"
+version = "1.8.1-1"
 
 source = {
-  url = "git://github.com/leafo/pgmoon.git"
+  url = "git://github.com/Kong/pgmoon.git",
+  tag = "1.8.1"
 }
 
 description = {
@@ -22,14 +23,14 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-    ["pgmoon"] = "pgmoon/init.lua",
-    ["pgmoon.arrays"] = "pgmoon/arrays.lua",
-    ["pgmoon.cqueues"] = "pgmoon/cqueues.lua",
-    ["pgmoon.crypto"] = "pgmoon/crypto.lua",
-    ["pgmoon.hstore"] = "pgmoon/hstore.lua",
-    ["pgmoon.json"] = "pgmoon/json.lua",
-    ["pgmoon.socket"] = "pgmoon/socket.lua",
-    ["pgmoon.util"] = "pgmoon/util.lua",
+    ["kpgmoon"] = "kpgmoon/init.lua",
+    ["kpgmoon.arrays"] = "kpgmoon/arrays.lua",
+    ["kpgmoon.cqueues"] = "kpgmoon/cqueues.lua",
+    ["kpgmoon.crypto"] = "kpgmoon/crypto.lua",
+    ["kpgmoon.hstore"] = "kpgmoon/hstore.lua",
+    ["kpgmoon.json"] = "kpgmoon/json.lua",
+    ["kpgmoon.socket"] = "kpgmoon/socket.lua",
+    ["kpgmoon.util"] = "kpgmoon/util.lua",
   },
 }
 

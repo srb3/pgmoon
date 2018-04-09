@@ -1,5 +1,5 @@
 local flatten
-flatten = require("pgmoon.util").flatten
+flatten = require("kpgmoon.util").flatten
 local CqueuesSocket
 do
   local _class_0

@@ -1,5 +1,5 @@
 
-import Postgres from require "pgmoon"
+import Postgres from require "kpgmoon"
 
 unpack = table.unpack or unpack
 
@@ -7,7 +7,7 @@ HOST = "127.0.0.1"
 USER = "postgres"
 DB = "pgmoon_test"
 
-describe "pgmoon with server", ->
+describe "kpgmoon with server", ->
   for socket_type in *{"luasocket", "cqueues"}
     describe "socket(#{socket_type})", ->
       local pg
@@ -314,7 +314,7 @@ describe "pgmoon with server", ->
         ]]
 
       describe "hstore", ->
-        import encode_hstore, decode_hstore from require "pgmoon.hstore"
+        import encode_hstore, decode_hstore from require "kpgmoon.hstore"
 
         describe "encoding", ->
           it "encodes hstore type", ->
@@ -387,7 +387,7 @@ describe "pgmoon with server", ->
             assert.same {abc: '123', foo: 'bar'}, res[1].h
 
       describe "json", ->
-        import encode_json, decode_json from require "pgmoon.json"
+        import encode_json, decode_json from require "kpgmoon.json"
 
         it "encodes json type", ->
           t = { hello: "world" }
@@ -428,10 +428,10 @@ describe "pgmoon with server", ->
           ]]
 
       describe "arrays", ->
-        import decode_array, encode_array from require "pgmoon.arrays"
+        import decode_array, encode_array from require "kpgmoon.arrays"
 
         it "converts table to array", ->
-          import PostgresArray from require "pgmoon.arrays"
+          import PostgresArray from require "kpgmoon.arrays"
 
           array = PostgresArray {1,2,3}
           assert.same {1,2,3}, array
@@ -444,7 +444,7 @@ describe "pgmoon with server", ->
 
         it "decodes empty array value", ->
           assert.same {}, decode_array "{}"
-          import PostgresArray from require "pgmoon.arrays"
+          import PostgresArray from require "kpgmoon.arrays"
           assert PostgresArray.__base == getmetatable decode_array "{}"
 
         it "decodes numeric array", ->
@@ -630,7 +630,7 @@ describe "pgmoon with server", ->
         pg\disconnect!
         os.execute "dropdb -U postgres '#{DB}'"
 
-describe "pgmoon without server", ->
+describe "kpgmoon without server", ->
   escape_ident = {
     { "dad", '"dad"' }
     { "select", '"select"' }

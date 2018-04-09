@@ -27,7 +27,7 @@ do
     escape_literal = escape_literal or default_escape_literal
     if not (escape_literal) then
       local Postgres
-      Postgres = require("pgmoon").Postgres
+      Postgres = require("kpgmoon").Postgres
       local default_escape_literal
       default_escape_literal = function(v)
         return Postgres.escape_literal(nil, v)

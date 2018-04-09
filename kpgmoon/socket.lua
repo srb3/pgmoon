@@ -1,7 +1,7 @@
 local luasocket
 do
   local flatten
-  flatten = require("pgmoon.util").flatten
+  flatten = require("kpgmoon.util").flatten
   local proxy_mt = {
     __index = function(self, key)
       local sock = self.sock
@@ -94,7 +94,7 @@ return {
     elseif "luasocket" == _exp_0 then
       socket = luasocket.tcp()
     elseif "cqueues" == _exp_0 then
-      socket = require("pgmoon.cqueues").CqueuesSocket()
+      socket = require("kpgmoon.cqueues").CqueuesSocket()
     else
       socket = error("unknown socket type: " .. tostring(socket_type))
     end

@@ -1,5 +1,5 @@
 
-import flatten from require "pgmoon.util"
+import flatten from require "kpgmoon.util"
 
 class CqueuesSocket
   connect: (host, port, opts) =>

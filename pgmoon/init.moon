@@ -305,10 +305,18 @@ class Postgres
           insert notifications, @parse_notification(msg)
         -- when MSG_TYPE.notice
         -- TODO: do something with notices
+        else
+          if ngx then
+              ngx.log(ngx.ERR, "received unhandled MSG_TYPE: ", tostring(t),
+                               " (msg: ", tostring(msg), ")")
 
     if err_msg
+      if ngx then
+          ngx.log(ngx.DEBUG, "returning err_msg")
       return nil, @parse_error(err_msg), result, num_queries, notifications
 
+    if ngx then
+        ngx.log(ngx.DEBUG, "returning result, num_queries")
     result, num_queries, notifications
 
   post: (q) =>

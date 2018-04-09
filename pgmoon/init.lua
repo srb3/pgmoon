@@ -330,10 +330,20 @@ do
             notifications = { }
           end
           insert(notifications, self:parse_notification(msg))
+        else
+          if ngx then
+            ngx.log(ngx.ERR, "received unhandled MSG_TYPE: ", tostring(t), " (msg: ", tostring(msg), ")")
+          end
         end
       end
       if err_msg then
+        if ngx then
+          ngx.log(ngx.DEBUG, "returning err_msg")
+        end
         return nil, self:parse_error(err_msg), result, num_queries, notifications
+      end
+      if ngx then
+        ngx.log(ngx.DEBUG, "returning result, num_queries")
       end
       return result, num_queries, notifications
     end,

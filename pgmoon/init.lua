@@ -699,7 +699,8 @@ do
         self.luasec_opts = {
           key = key,
           cert = cert,
-          cafile = opts.cafile
+          cafile = opts.cafile,
+          ssl_version = opts.ssl_version
         }
       end
     end,
